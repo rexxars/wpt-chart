@@ -34,7 +34,7 @@ function processTestInfo(info) {
 function onTestInfoResponse(err, info) {
     if (err) {
         return console.log('TestInfo fail: ', err);
-    } else if (!info.testId) {
+    } else if (!info.response || !info.response.data.testId) {
         debugLog('Item did not contain testId, skipping');
         incrementProcessedCount();
         return;
