@@ -1,0 +1,16 @@
+$icon-font-path: "/bower_components/sass-bootstrap/fonts/";
+
+@import 'sass-bootstrap/lib/bootstrap';
+
+body {
+    padding-bottom: 20px;
+}
+
+h1 {
+    border-bottom: 4px dotted #999;
+    display: inline-block;
+}
+
+.container {
+    width: 100%;
+}

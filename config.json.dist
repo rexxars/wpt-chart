@@ -1,0 +1,5 @@
+{
+    "wptHost": "http://www.webpagetest.org/",
+    "apiPort": 1337,
+    "mongodb": "localhost/wpt"
+}
