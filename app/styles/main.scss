@@ -7,10 +7,32 @@ body {
 }
 
 h1 {
+    margin: 0;
     border-bottom: 4px dotted #999;
     display: inline-block;
+    float: right;
+}
+
+.header {
+    text-align: center;
+
+    width: 100%;
+    margin-top: 10px;
 }
 
 .container {
     width: 100%;
+}
+
+.charts {
+    .chart {
+        border: 1px solid #ccc;
+        height: 400px;
+    }
+}
+
+.settings {
+    &.opaque {
+        opacity: 0.9;
+    }
 }

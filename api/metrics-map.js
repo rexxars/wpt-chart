@@ -1,3 +1,11 @@
 module.exports = {
-    'loadTime': 'Page load time (ms)'
+    'loadTime': {
+        'name': 'Page load time (ms)',
+        'formatter': 'ms'
+    },
+
+    'bytesIn': {
+        'name': 'Bytes in',
+        'formatter': 'bytes'
+    }
 };

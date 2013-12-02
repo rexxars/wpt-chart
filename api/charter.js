@@ -1,5 +1,7 @@
 'use strict';
-var metricsMap = require('./metrics-map');
+var _             = require('lodash'),
+    metricsMap    = require('./metrics-map'),
+    getMetricInfo = function(metric) { return metricsMap[metric] || {}; };
 
 module.exports = function(data, type, metrics) {
     var charts = {
@@ -13,10 +15,20 @@ module.exports = function(data, type, metrics) {
         }
     };
 
+    // Helper method for sorting by dates
+    var dateSort = function(item) { return item[0]; };
+
     // Define yAxis titles
-    for (var i = 0; i < metrics.length; i++) {
-        charts.firstView.yAxis.push({ title: { text: metricsMap[metrics[i]] || metrics[i] } });
-        charts.repeatView.yAxis.push({ title: { text: metricsMap[metrics[i]] || metrics[i] } });
+    for (var i = 0, axisInfo; i < metrics.length; i++) {
+        axisInfo = {
+            title: { text: getMetricInfo(metrics[i]).name || metrics[i] },
+            formatterType: getMetricInfo(metrics[i]).formatter,
+            min: 0,
+            opposite: i % 2 === 0
+        };
+
+        charts.firstView.yAxis.push(axisInfo);
+        charts.repeatView.yAxis.push(axisInfo);
     }
 
     // Define series data
@@ -27,8 +39,8 @@ module.exports = function(data, type, metrics) {
 
         // Define empty series for all metrics
         for (m = 0; m < metrics.length; m++) {
-            series.firstView[metrics[m]] = { name: url, data: [] };
-            series.repeatView[metrics[m]] = { name: url, data: [] };
+            series.firstView[metrics[m]] = { name: metrics[m] + ' (' + url + ')', data: [], yAxis: m };
+            series.repeatView[metrics[m]] = { name: url, data: [], yAxis: m };
         }
 
         // Loop over tests with this URL
@@ -45,6 +57,11 @@ module.exports = function(data, type, metrics) {
                         completed,
                         testData[view][metric]
                     ]);
+
+                    series[view][metric].data = _.sortBy(
+                        series[view][metric].data,
+                        dateSort
+                    );
                 }
             }
         }

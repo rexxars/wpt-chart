@@ -17,19 +17,33 @@
     <body>
         <div class="container">
             <div class="header">
+                <button type="button" class="btn btn-primary settings-button">
+                    <span class="glyphicon glyphicon-wrench">
+                    Settings
+                </button>
+
                 <h1 class="text-muted">WPT-Chart</h1>
+            </div>
+
+            <div class="content">
+                <section class="settings opaque hiddena">
+                    <h2>Settings</h2>
+
+                    <table><tbody class="togglers"></tbody></table>
+                </section>
+
+                <section class="charts">
+                    <h2>First view</h2>
+                    <div id="first-view-chart" class="chart"></div>
+
+                    <h2>Repeat view</h2>
+                    <div id="repeat-view-chart" class="chart"></div>
+                </section>
             </div>
         </div>
 
-
-        <!-- build:js scripts/vendor.js -->
-        <!-- bower:js -->
-        <script src="bower_components/jquery/jquery.js"></script>
-        <!-- endbower -->
-        <!-- endbuild -->
-
         <!-- build:js scripts/main.js -->
-        <script src="scripts/main.js"></script>
+        <script data-main="scripts/main" src="bower_components/requirejs/require.js"></script>
         <!-- endbuild -->
 </body>
 </html>

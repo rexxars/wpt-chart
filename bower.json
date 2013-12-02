@@ -2,8 +2,12 @@
   "name": "wpt-chart",
   "version": "0.0.0",
   "dependencies": {
+    "requirejs": "~2.1.8",
     "sass-bootstrap": "~3.0.0",
-    "jquery": "~1.10.2"
+    "jquery": "~1.10.2",
+    "highcharts": "~3.0.7",
+    "lodash": "~2.4.0",
+    "pubsub-js": "~1.4.0"
   },
   "devDependencies": {}
 }
