@@ -9,7 +9,8 @@ var _          = require('lodash'),
     db         = mongo(config.mongodb || 'localhost/wpt'),
     results    = db.collection('testResults'),
     restify    = require('restify'),
-    server     = restify.createServer();
+    server     = restify.createServer(),
+    apiPath    = '/api';
 
 server.use(restify.queryParser());
 server.use(restify.jsonp());
@@ -32,7 +33,11 @@ function getAggregatorForKey(key) {
     ];
 }
 
-server.get('/chart', function(req, res) {
+server.get('/', function(req, res) {
+    res.send({ 'msg': 'you hit the api' });
+});
+
+server.get(apiPath + '/chart', function(req, res) {
     var urls     = req.params.url || [],
         metrics  = req.params.metric || ['loadTime'],
         type     = req.params.type || 'median',
@@ -106,13 +111,13 @@ server.get('/chart', function(req, res) {
     });
 });
 
-server.get('/locations', function(req, res) {
+server.get(apiPath + '/locations', function(req, res) {
     results.aggregate(getAggregatorForKey('location'), function(err, locations) {
         res.send(_.pluck(locations || [], '_id'));
     });
 });
 
-server.get('/labels', function(req, res) {
+server.get(apiPath + '/labels', function(req, res) {
     results.aggregate(getAggregatorForKey('label'), function(err, labels) {
         labels = _.chain(labels || [])
             .pluck('_id')
@@ -123,7 +128,7 @@ server.get('/labels', function(req, res) {
     });
 });
 
-server.get('/urls', function(req, res) {
+server.get(apiPath + '/urls', function(req, res) {
     var minTests = req.params.minTests || 5;
     results.aggregate(getAggregatorForKey('testUrl'), function(err, urls) {
         urls = _.filter(urls, function(url) { return url.tests >= minTests; });
@@ -131,7 +136,7 @@ server.get('/urls', function(req, res) {
     });
 });
 
-server.get('/metrics', function(req, res) {
+server.get(apiPath + '/metrics', function(req, res) {
     res.send(metricsMap);
 });
 
@@ -141,3 +146,5 @@ server.on('uncaughtException', function(req, res, route, err) {
 });
 
 server.listen(config.apiPort);
+
+module.exports = server;

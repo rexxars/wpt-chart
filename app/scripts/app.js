@@ -10,7 +10,7 @@ define([
 ], function(Api, SettingsToggler, UrlToggler, LocationToggler, LabelToggler, SettingsPersister, MetricsPicker, ChartRenderer) {
     'use strict';
 
-    var apiUrl = 'http://' + window.location.hostname + ':1337';
+    var apiUrl = window.location.pathname + 'api';
 
     var App = function() {
         App.api = new Api(apiUrl);

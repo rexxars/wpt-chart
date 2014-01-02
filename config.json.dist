@@ -1,5 +1,7 @@
 {
-    "wptHost": "http://www.webpagetest.org/",
-    "apiPort": 1337,
-    "mongodb": "localhost/wpt"
+    "wptHost"     : "http://www.webpagetest.org/",
+    "apiPort"     : 1337,
+    "frontendPort": 7000,
+    "proxyPort"   : 8000,
+    "mongodb"     : "localhost/wpt"
 }
