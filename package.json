@@ -2,7 +2,7 @@
   "name": "wpt-chart",
   "version": "0.0.0",
   "dependencies": {
-    "webpagetest": "~0.2.0",
+    "webpagetest": "git://github.com/rexxars/webpagetest-api.git#b9dc22ed065d80c10266689280bff55bf6754d91",
     "mongojs": "~0.9.8",
     "restify": "~2.6.0",
     "async": "~0.2.9",
