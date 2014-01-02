@@ -30,6 +30,34 @@ define(['lodash', 'highcharts', 'formatters'], function(_, Highcharts, formatter
                         ].join('');
                     }
                 },
+                plotOptions: {
+                    spline: {
+                        lineWidth: 2,
+                        marker: {
+                            lineWidth: 1,
+                            radius: 3,
+                            states: {
+                                hover: {
+                                    radius: 5
+                                }
+                            }
+                        },
+                        point: {
+                            events: {
+                                click: function() {
+                                    var url = (
+                                        window.location.pathname +
+                                        'api/test-result/' +
+                                        this.options.t
+                                    );
+
+                                    window.open(url);
+                                }
+                            }
+                        },
+                        cursor: 'pointer'
+                    }
+                },
                 credits: {
                     enabled: false
                 },

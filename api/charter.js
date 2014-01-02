@@ -16,7 +16,7 @@ module.exports = function(data, type, metrics) {
     };
 
     // Helper method for sorting by dates
-    var dateSort = function(item) { return item[0]; };
+    var dateSort = function(item) { return item.x || item[0]; };
 
     // Define yAxis titles
     for (var i = 0, axisInfo; i < metrics.length; i++) {
@@ -60,10 +60,11 @@ module.exports = function(data, type, metrics) {
             for (view in testData) {
                 // loadTime, bytesOut...
                 for (metric in testData[view]) {
-                    series[view][metric].data.push([
-                        completed,
-                        testData[view][metric]
-                    ]);
+                    series[view][metric].data.push({
+                        x: completed,
+                        y: testData[view][metric],
+                        t: data[key][i].testId
+                    });
 
                     series[view][metric].data = _.sortBy(
                         series[view][metric].data,

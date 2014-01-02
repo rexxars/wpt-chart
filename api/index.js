@@ -62,7 +62,7 @@ server.get(apiPath + '/chart', function(req, res) {
     }
 
     // Prepare database queries
-    var projection  = { completed: 1 },
+    var projection  = { completed: 1, testId: 1 },
         callbacks   = {};
 
     // Define projections
@@ -138,6 +138,14 @@ server.get(apiPath + '/urls', function(req, res) {
 
 server.get(apiPath + '/metrics', function(req, res) {
     res.send(metricsMap);
+});
+
+server.get(apiPath + '/test-result/:testId', function(req, res) {
+    res.header('Location', (
+        config.wptHost.replace(/\/$/, '') +
+        '/result/' + req.params.testId + '/'
+    ));
+    res.send(302);
 });
 
 server.on('uncaughtException', function(req, res, route, err) {
