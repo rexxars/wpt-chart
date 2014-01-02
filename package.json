@@ -6,7 +6,8 @@
     "mongojs": "~0.9.8",
     "restify": "~2.6.0",
     "async": "~0.2.9",
-    "lodash": "~2.4.0"
+    "lodash": "~2.4.0",
+    "lockfile": "~0.4.2"
   },
   "devDependencies": {
     "grunt": "~0.4.1",

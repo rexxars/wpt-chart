@@ -16,12 +16,12 @@ server.use(restify.jsonp());
 server.use(restify.gzipResponse());
 server.use(restify.bodyParser());
 
-server.get('/urls', function(req, res) {
-    var minTests = req.params.minTests || 5;
-    results.aggregate([
+// Common aggregator based on number of tests
+function getAggregatorForKey(key) {
+    return [
         {
             '$group': {
-                _id: '$testUrl',
+                _id: '$' + key,
                 tests: { $sum: 1 }
             }
         }, {
@@ -29,16 +29,14 @@ server.get('/urls', function(req, res) {
                 tests: -1
             }
         }
-    ], function(err, urls) {
-        urls = _.filter(urls, function(url) { return url.tests >= minTests; });
-        res.send(_.pluck(urls || [], '_id'));
-    });
-});
+    ];
+}
 
 server.get('/chart', function(req, res) {
     var urls     = req.params.url || [],
         metrics  = req.params.metric || ['loadTime'],
-        type     = req.params.type,
+        type     = req.params.type || 'median',
+        labels   = req.params.label || [],
         location = req.params.location,
         views    = ['firstView', 'repeatView'],
         from     = new Date(req.params.from || Date.now() - (1000 * 60 * 60 * 24 * 30)),
@@ -55,10 +53,6 @@ server.get('/chart', function(req, res) {
     } else if (!urls.length) {
         return res.send({
             error: 'Missing URL(s) - needs at least one URL to fetch data for'
-        });
-    } else if (!location) {
-        return res.send({
-            error: 'Missing location'
         });
     }
 
@@ -78,17 +72,62 @@ server.get('/chart', function(req, res) {
         results.find(this.query, projection).sort({ _id: 1 }, callback);
     };
 
+    // Define base query
+    var baseQuery = {
+        'completed': {
+            '$gte': from,
+            '$lte': to
+        }
+    };
+
+    // Add conditional query params
+    if (labels.length) {
+        baseQuery.label = {
+            '$in': labels
+        };
+    }
+
+    if (location) {
+        baseQuery.location = location;
+    }
+
     // Define each callback with a logical key
     for (i = 0; i < urls.length; i++) {
-        callbacks[urls[i]] = queryRunner.bind({ query: {
-            testUrl: urls[i],
-            location: location
-        }});
+        callbacks[urls[i]] = queryRunner.bind({
+            query: _.merge({}, baseQuery, {
+                testUrl: urls[i]
+            })
+        });
     }
 
     // Run the queries in parallel
     async.parallel(callbacks, function(err, results) {
         res.send(charter(results, type, metrics));
+    });
+});
+
+server.get('/locations', function(req, res) {
+    results.aggregate(getAggregatorForKey('location'), function(err, locations) {
+        res.send(_.pluck(locations || [], '_id'));
+    });
+});
+
+server.get('/labels', function(req, res) {
+    results.aggregate(getAggregatorForKey('label'), function(err, labels) {
+        labels = _.chain(labels || [])
+            .pluck('_id')
+            .compact()
+            .value();
+
+        res.send(labels);
+    });
+});
+
+server.get('/urls', function(req, res) {
+    var minTests = req.params.minTests || 5;
+    results.aggregate(getAggregatorForKey('testUrl'), function(err, urls) {
+        urls = _.filter(urls, function(url) { return url.tests >= minTests; });
+        res.send(_.pluck(urls || [], '_id'));
     });
 });
 

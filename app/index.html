@@ -26,18 +26,39 @@
             </div>
 
             <div class="content">
-                <section class="settings opaque hiddena">
+                <section class="settings opaque clearfix hidden">
                     <h2>Settings</h2>
 
-                    <table><tbody class="togglers"></tbody></table>
+                    <div class="setting">
+                        <h3>Metrics</h3>
+                        <table><tbody class="togglers"></tbody></table>
+                    </div>
+                    <div class="setting">
+                        <h3>URLs</h3>
+                        <ul class="url-list"></ul>
+                    </div>
+                    <div class="setting">
+                        <h3>Label</h3>
+                        <ul class="label-list"></ul>
+                    </div>
+                    <div class="setting">
+                        <h3>Locations</h3>
+                        <ul class="location-list">
+                            <li class="input-group">
+                                <span class="input-group-addon">
+                                    <input id="location-all" name="test-location" type="radio" data-id="">
+                                </span>
+                                <label for="location-all" class="form-control">All locations</label></li>
+                        </ul>
+                    </div>
                 </section>
 
                 <section class="charts">
                     <h2>First view</h2>
-                    <div id="first-view-chart" class="chart"></div>
+                    <div class="chart first-view"></div>
 
                     <h2>Repeat view</h2>
-                    <div id="repeat-view-chart" class="chart"></div>
+                    <div class="chart repeat-view"></div>
                 </section>
             </div>
         </div>

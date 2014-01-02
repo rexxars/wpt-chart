@@ -12,13 +12,20 @@ define(['jquery', 'lodash'], function($, _) {
             }, callback);
         },
 
+        getLocations: function(callback) {
+            $.getJSON(this.host + '/locations?callback=?', callback);
+        },
+
         getChartData: function(options, callback) {
-            var query = {};
-            $.getJSON(this.host + '/urls?callback=?', query, callback);
+            $.getJSON(this.host + '/chart?callback=?', options, callback);
         },
 
         getMetrics: function(callback) {
             $.getJSON(this.host + '/metrics?callback=?', callback);
+        },
+
+        getLabels: function(callback) {
+            $.getJSON(this.host + '/labels?callback=?', callback);
         }
     });
 

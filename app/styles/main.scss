@@ -32,7 +32,30 @@ h1 {
 }
 
 .settings {
+    .setting {
+        float: left;
+        margin: 0 0 0 20px;
+    }
+
     &.opaque {
         opacity: 0.9;
+    }
+
+    td.input-group {
+        position: static;
+        display: table-cell;
+        padding: 5px 0;
+        padding-right: 10px;
+    }
+
+    .url-list, .location-list, .label-list {
+        padding: 0;
+        max-width: 430px;
+        max-height: 300px;
+        overflow-y: auto;
+
+        li {
+            margin: 5px 0;
+        }
     }
 }

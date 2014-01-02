@@ -23,8 +23,9 @@ module.exports = function(data, type, metrics) {
         axisInfo = {
             title: { text: getMetricInfo(metrics[i]).name || metrics[i] },
             formatterType: getMetricInfo(metrics[i]).formatter,
-            min: 0,
-            opposite: i % 2 === 0
+            //min: 0,
+            opposite: i % 2 === 0,
+            startOnTick: false
         };
 
         charts.firstView.yAxis.push(axisInfo);
@@ -32,15 +33,21 @@ module.exports = function(data, type, metrics) {
     }
 
     // Define series data
-    var key, url, testData, view, metric, m, completed, series;
+    var key, url, testData, view, metric, m, completed, series, seriesData;
     for (key in data) {
         url = key.replace(/^https?:\/\//, '');
         series = { firstView: {}, repeatView: {} };
 
         // Define empty series for all metrics
         for (m = 0; m < metrics.length; m++) {
-            series.firstView[metrics[m]] = { name: metrics[m] + ' (' + url + ')', data: [], yAxis: m };
-            series.repeatView[metrics[m]] = { name: url, data: [], yAxis: m };
+            seriesData = {
+                name: getMetricInfo(metrics[m]).name + ' (' + url + ')',
+                yAxis: m,
+                formatterType: getMetricInfo(metrics[m]).formatter
+            };
+
+            series.firstView[metrics[m]] = _.merge({ data: [] }, seriesData);
+            series.repeatView[metrics[m]] = _.merge({ data: [] }, seriesData);
         }
 
         // Loop over tests with this URL

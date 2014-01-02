@@ -1,13 +1,16 @@
 'use strict';
 
-var WebPageTest = require('webpagetest'),
-    mongo     = require('mongojs'),
-    config    = require('../config.json'),
-    wpt       = new WebPageTest(config.wptHost),
-    db        = mongo(config.mongodb || 'localhost/wpt'),
-    results   = db.collection('testResults'),
-    newTests  = 0,
-    processed = 0;
+var WebPageTest  = require('webpagetest'),
+    mongo        = require('mongojs'),
+    config       = require('../config.json'),
+    lockLocation = config.lockFile || '/tmp/wpt-chart.lock',
+    lockfile     = require('lockfile'),
+    wpt          = new WebPageTest(config.wptHost),
+    db           = mongo(config.mongodb || 'localhost/wpt'),
+    results      = db.collection('testResults'),
+    testLabels   = {},
+    newTests     = 0,
+    processed    = 0;
 
 function debugLog(msg) {
     if (config.debug) {
@@ -19,7 +22,12 @@ function incrementProcessedCount() {
     if (++processed === newTests) {
         // All done, close database handle
         db.close();
-        console.log('Done!');
+        console.log('Database handle closed');
+
+        // Release lock
+        lockfile.unlock(lockLocation, function() {
+            console.log('Lockfile removed');
+        });
     }
 
     return processed;
@@ -40,11 +48,18 @@ function onTestInfoResponse(err, info) {
         return;
     }
 
-    results.insert(
-        processTestInfo(info.response.data)
+    var data = info.response.data, testId = data.testId;
+    if (testLabels[testId]) {
+        data.label = testLabels[testId];
+    }
+
+    results.update(
+        { 'testId': testId },
+        processTestInfo(data),
+        { 'upsert': true }
     );
 
-    debugLog('Inserted a new result!');
+    debugLog('Inserted/updated test result');
     incrementProcessedCount();
 }
 
@@ -53,7 +68,7 @@ function onTestStatusResponse(err, status) {
         return console.log('TestStatus fail: ', err);
     } else if (status.data.statusCode !== 200) {
         // Test is not yet done
-        debugLog('Found ongoing result, waiting for it to finish');
+        debugLog('Found ongoing result (' + status.data.statusCode + '), waiting for it to finish');
         incrementProcessedCount();
         return;
     }
@@ -71,10 +86,10 @@ function getTestStatusIfNew(testId) {
     }, function(err, doc) {
         if (err) {
             return console.log('Database fail: ', err);
-        } else if (!doc) {
+        } else if (!doc || config.updateOld) {
             getTestStatus(testId);
         } else {
-            // Document already exists
+            // Document already exists and we're not gonna update
             debugLog('Test already exists in database, skipping!');
             incrementProcessedCount();
         }
@@ -87,9 +102,21 @@ function onHistoryResponse(err, data) {
     }
 
     newTests = data.length;
-    for (var key in data) {
-        getTestStatusIfNew(data[key]['Test ID']);
+    var key, test, testId;
+    for (key in data) {
+        test   = data[key];
+        testId = test['Test ID'];
+
+        testLabels[testId] = test.Label;
+        getTestStatusIfNew(testId);
     }
 }
 
-wpt.getHistory(1, onHistoryResponse);
+lockfile.lock(lockLocation, { wait: 5000 }, function (err) {
+    if (err) {
+        console.log('Lock error: ' + err);
+        return;
+    }
+
+    wpt.getHistory(1, onHistoryResponse);
+});

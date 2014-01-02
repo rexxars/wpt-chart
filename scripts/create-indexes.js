@@ -10,6 +10,13 @@ results.ensureIndex({
 });
 
 results.ensureIndex({
+    label: 1,
+    testUrl: 1,
+    location: 1,
+    completed: 1,
+});
+
+results.ensureIndex({
     testUrl: 1,
     completed: -1
 });
