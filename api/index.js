@@ -39,6 +39,7 @@ server.get('/', function(req, res) {
 
 server.get(apiPath + '/chart', function(req, res) {
     var urls     = req.params.url || [],
+        sets     = [],
         metrics  = req.params.metric || ['loadTime'],
         type     = req.params.type || 'median',
         labels   = req.params.label || [],
@@ -63,11 +64,11 @@ server.get(apiPath + '/chart', function(req, res) {
 
     // Prepare database queries
     var projection  = { completed: 1, testId: 1 },
-        callbacks   = {};
+        callbacks   = {}, x, i, key;
 
     // Define projections
-    for (var i = 0; i < metrics.length; i++) {
-        for (var x = 0; x < views.length; x++) {
+    for (i = 0; i < metrics.length; i++) {
+        for (x = 0; x < views.length; x++) {
             projection[[type, views[x], metrics[i]].join('.')] = 1;
         }
     }
@@ -85,24 +86,21 @@ server.get(apiPath + '/chart', function(req, res) {
         }
     };
 
-    // Add conditional query params
-    if (labels.length) {
-        baseQuery.label = {
-            '$in': labels
-        };
-    }
-
     if (location) {
         baseQuery.location = location;
     }
 
     // Define each callback with a logical key
     for (i = 0; i < urls.length; i++) {
-        callbacks[urls[i]] = queryRunner.bind({
-            query: _.merge({}, baseQuery, {
-                testUrl: urls[i]
-            })
-        });
+        for (x = 0; x < labels.length; x++) {
+            key = urls[i] + '-' + labels[x];
+            callbacks[key] = queryRunner.bind({
+                query: _.merge({}, baseQuery, {
+                    testUrl: urls[i],
+                    label: labels[x]
+                })
+            });
+        }
     }
 
     // Run the queries in parallel
