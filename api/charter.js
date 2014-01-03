@@ -76,11 +76,15 @@ module.exports = function(data, type, metrics) {
 
         // Assign series to chart data
         for (metric in series.firstView) {
-            charts.firstView.series.push(series.firstView[metric]);
+            if (series.firstView[metric].data.length) {
+                charts.firstView.series.push(series.firstView[metric]);
+            }
         }
 
         for (metric in series.repeatView) {
-            charts.repeatView.series.push(series.repeatView[metric]);
+            if (series.repeatView[metric].data.length) {
+                charts.repeatView.series.push(series.repeatView[metric]);
+            }
         }
     }
 
