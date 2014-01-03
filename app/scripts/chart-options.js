@@ -7,14 +7,19 @@ define(['lodash', 'highcharts', 'formatters'], function(_, Highcharts, formatter
                 chart: {
                     type: 'spline',
                     zoomType: 'x',
-                    animation: false
+                    isZoomed: false,
+                    animation: false,
+                    resetZoomButton: {
+                        theme: {
+                            display: 'none'
+                        }
+                    }
                 },
                 title: {
                     text: ''
                 },
                 tooltip: {
                     shared: false,
-                    crosshairs: true,
                     formatter: function() {
                         var formatterType = this.series.userOptions.formatterType,
                             formatter     = formatters[formatterType];
