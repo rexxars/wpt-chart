@@ -75,12 +75,14 @@ define(['lodash', 'highcharts', 'formatters'], function(_, Highcharts, formatter
         merge: function(options) {
             var opts = _.merge({}, this.getDefaults(), options), axis;
 
-            for (var i = 0; i < opts.yAxis.length; i++) {
-                axis = opts.yAxis[i];
-                if (axis.formatterType && formatters[axis.formatterType]) {
-                    opts.yAxis[i].labels = {
-                        formatter: formatters[axis.formatterType]
-                    };
+            if (opts.yAxis) {
+                for (var i = 0; i < opts.yAxis.length; i++) {
+                    axis = opts.yAxis[i];
+                    if (axis.formatterType && formatters[axis.formatterType]) {
+                        opts.yAxis[i].labels = {
+                            formatter: formatters[axis.formatterType]
+                        };
+                    }
                 }
             }
 

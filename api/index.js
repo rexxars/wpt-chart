@@ -39,7 +39,6 @@ server.get('/', function(req, res) {
 
 server.get(apiPath + '/chart', function(req, res) {
     var urls     = req.params.url || [],
-        sets     = [],
         metrics  = req.params.metric || ['loadTime'],
         type     = req.params.type || 'median',
         labels   = req.params.label || [],
@@ -92,12 +91,20 @@ server.get(apiPath + '/chart', function(req, res) {
 
     // Define each callback with a logical key
     for (i = 0; i < urls.length; i++) {
-        for (x = 0; x < labels.length; x++) {
-            key = urls[i] + '-' + labels[x];
-            callbacks[key] = queryRunner.bind({
+        if (labels.length) {
+            for (x = 0; x < labels.length; x++) {
+                key = urls[i] + '-' + labels[x];
+                callbacks[key] = queryRunner.bind({
+                    query: _.merge({}, baseQuery, {
+                        testUrl: urls[i],
+                        label: labels[x]
+                    })
+                });
+            }
+        } else {
+            callbacks[urls[i]] = queryRunner.bind({
                 query: _.merge({}, baseQuery, {
-                    testUrl: urls[i],
-                    label: labels[x]
+                    testUrl: urls[i]
                 })
             });
         }
