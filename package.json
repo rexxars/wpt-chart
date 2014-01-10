@@ -40,5 +40,8 @@
   "engines": {
     "node": ">=0.8.0"
   },
+  "scripts": {
+    "start": "node index.js"
+  },
   "main": "index.js"
 }
